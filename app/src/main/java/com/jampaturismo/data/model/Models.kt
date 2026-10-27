@@ -56,5 +56,7 @@ data class TouristPlace(
     val latitude: Double,
     val longitude: Double,
     val travelTip: String,
+    val imageUrl: String = "",
     val isFavorite: Boolean = false
 )
+

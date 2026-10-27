@@ -19,7 +19,8 @@ class TouristPlaceRepository {
             idealTideMaxHeight = 0.5,
             latitude = -7.0270,
             longitude = -34.8239,
-            travelTip = "Acesse apenas com maré ≤ 0.5m. Embarque pela praia do Poço ou Camboinha."
+            travelTip = "Acesse apenas com maré ≤ 0.5m. Embarque pela praia do Poço ou Camboinha.",
+            imageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
         ),
         TouristPlace(
             id = "piscina_seixas",
@@ -31,7 +32,8 @@ class TouristPlaceRepository {
             idealTideMaxHeight = 0.4,
             latitude = -7.1511,
             longitude = -34.7932,
-            travelTip = "Catamarãs saem da praia da Penha e Seixas 1h30 antes do pico da maré baixa."
+            travelTip = "Catamarãs saem da praia da Penha e Seixas 1h30 antes do pico da maré baixa.",
+            imageUrl = "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80"
         ),
         TouristPlace(
             id = "picaozinho",
@@ -43,7 +45,8 @@ class TouristPlaceRepository {
             idealTideMaxHeight = 0.5,
             latitude = -7.1130,
             longitude = -34.8080,
-            travelTip = "Leve snorkel e sapatilha aquática para proteger os pés nos corais."
+            travelTip = "Leve snorkel e sapatilha aquática para proteger os pés nos corais.",
+            imageUrl = "https://images.unsplash.com/photo-1510414842594-a61752d38524?auto=format&fit=crop&w=600&q=80"
         ),
         TouristPlace(
             id = "jacare",
@@ -55,7 +58,8 @@ class TouristPlaceRepository {
             idealTideMaxHeight = null,
             latitude = -7.0392,
             longitude = -34.8569,
-            travelTip = "Chegue antes das 16h30 para pegar um bom lugar no píer ou nos catamarãs."
+            travelTip = "Chegue antes das 16h30 para pegar um bom lugar no píer ou nos catamarãs.",
+            imageUrl = "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=600&q=80"
         ),
         TouristPlace(
             id = "coqueirinho",
@@ -67,7 +71,8 @@ class TouristPlaceRepository {
             idealTideMaxHeight = null,
             latitude = -7.3195,
             longitude = -34.7972,
-            travelTip = "Passeios de buggy levam aos mirantes do Dedo de Deus e das Tartarugas."
+            travelTip = "Passeios de buggy levam aos mirantes do Dedo de Deus e das Tartarugas.",
+            imageUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
         ),
         TouristPlace(
             id = "centro_historico",
@@ -79,7 +84,8 @@ class TouristPlaceRepository {
             idealTideMaxHeight = null,
             latitude = -7.1158,
             longitude = -34.8856,
-            travelTip = "Ideal para o período da manhã ou dias nublados. Visite também a Casa da Pólvora."
+            travelTip = "Ideal para o período da manhã ou dias nublados. Visite também a Casa da Pólvora.",
+            imageUrl = "https://images.unsplash.com/photo-1548625361-125032541300?auto=format&fit=crop&w=600&q=80"
         )
     )
 
@@ -89,4 +95,13 @@ class TouristPlaceRepository {
     fun getPlaceById(id: String): TouristPlace? {
         return _places.value.find { it.id == id }
     }
+
+    fun getPlacesByCategory(category: PlaceCategory): List<TouristPlace> {
+        return _places.value.filter { it.category == category }
+    }
+
+    fun getTideDependentPlaces(): List<TouristPlace> {
+        return _places.value.filter { it.tideDependency }
+    }
 }
+

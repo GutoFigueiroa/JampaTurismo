@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,22 +15,32 @@ import com.jampaturismo.core.navigation.Screen
 import com.jampaturismo.core.navigation.bottomNavItems
 import com.jampaturismo.core.theme.AquaCyan
 import com.jampaturismo.core.theme.OceanBlue
-import com.jampaturismo.data.model.TideData
-import com.jampaturismo.data.model.WeatherData
-import com.jampaturismo.data.repository.TouristPlaceRepository
 import com.jampaturismo.features.home.HomeScreen
+import com.jampaturismo.features.home.HomeViewModel
 import com.jampaturismo.features.map.MapScreen
+import com.jampaturismo.features.map.MapViewModel
 import com.jampaturismo.features.places.PlacesScreen
+import com.jampaturismo.features.places.PlacesViewModel
 import com.jampaturismo.features.tides.TidesScreen
+import com.jampaturismo.features.tides.TidesViewModel
 import com.jampaturismo.features.weather.WeatherScreen
+import com.jampaturismo.features.weather.WeatherViewModel
 
 @Composable
-fun JampaTurismoApp() {
+fun JampaTurismoApp(
+    homeViewModel: HomeViewModel = viewModel(),
+    tidesViewModel: TidesViewModel = viewModel(),
+    weatherViewModel: WeatherViewModel = viewModel(),
+    placesViewModel: PlacesViewModel = viewModel(),
+    mapViewModel: MapViewModel = viewModel()
+) {
     val navController = rememberNavController()
-    val repository = remember { TouristPlaceRepository() }
-    val places by repository.places.collectAsState(initial = emptyList())
-    val tideData = remember { TideData() }
-    val weatherData = remember { WeatherData() }
+
+    val homeUiState by homeViewModel.uiState.collectAsState()
+    val tidesUiState by tidesViewModel.uiState.collectAsState()
+    val weatherUiState by weatherViewModel.uiState.collectAsState()
+    val placesUiState by placesViewModel.uiState.collectAsState()
+    val mapUiState by mapViewModel.uiState.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -79,35 +90,41 @@ fun JampaTurismoApp() {
             // 1. Aba Início (Fernando - Líder)
             composable(Screen.Home.route) {
                 HomeScreen(
-                    tideData = tideData,
-                    weatherData = weatherData,
-                    recommendedPlaces = places,
+                    tideData = homeUiState.tideData,
+                    weatherData = homeUiState.weatherData,
+                    recommendedPlaces = homeUiState.recommendedPlaces,
                     onNavigateToTides = { navController.navigate(Screen.Tides.route) },
                     onNavigateToPlaces = { navController.navigate(Screen.Places.route) },
-                    onSelectPlace = { /* Detalhes do local */ }
+                    onSelectPlace = { /* Detalhes */ }
                 )
             }
 
             // 2. Aba Marés (Matheus Henrique do Egíto)
             composable(Screen.Tides.route) {
-                TidesScreen(tideData = tideData)
+                TidesScreen(tideData = tidesUiState.tideData)
             }
 
             // 3. Aba Explorar (Murillo Lopes)
             composable(Screen.Places.route) {
                 PlacesScreen(
-                    places = places,
+                    places = placesUiState.filteredPlaces,
+                    selectedCategory = placesUiState.selectedCategory,
+                    onCategorySelected = { placesViewModel.onSelectCategory(it) },
                     onSelectPlace = { /* Detalhes */ }
                 )
             }
 
             // 4. Aba Mapa (Matheus Henrique dos Santos Silva)
             composable(Screen.Map.route) {
-                MapScreen(places = places)
+                MapScreen(
+                    places = mapUiState.places,
+                    onPlaceSelected = { mapViewModel.onSelectPlace(it) }
+                )
             }
         }
     }
 }
+
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable
