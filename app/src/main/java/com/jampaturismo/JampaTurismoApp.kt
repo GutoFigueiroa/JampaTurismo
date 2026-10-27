@@ -42,6 +42,8 @@ fun JampaTurismoApp(
     val placesUiState by placesViewModel.uiState.collectAsState()
     val mapUiState by mapViewModel.uiState.collectAsState()
 
+    var selectedPlaceForDetails by remember { mutableStateOf<com.jampaturismo.data.model.TouristPlace?>(null) }
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -95,7 +97,7 @@ fun JampaTurismoApp(
                     recommendedPlaces = homeUiState.recommendedPlaces,
                     onNavigateToTides = { navController.navigate(Screen.Tides.route) },
                     onNavigateToPlaces = { navController.navigate(Screen.Places.route) },
-                    onSelectPlace = { /* Detalhes */ }
+                    onSelectPlace = { selectedPlaceForDetails = it }
                 )
             }
 
@@ -110,7 +112,9 @@ fun JampaTurismoApp(
                     places = placesUiState.filteredPlaces,
                     selectedCategory = placesUiState.selectedCategory,
                     onCategorySelected = { placesViewModel.onSelectCategory(it) },
-                    onSelectPlace = { /* Detalhes */ }
+                    onSelectPlace = { placeId ->
+                        selectedPlaceForDetails = placesUiState.places.find { it.id == placeId }
+                    }
                 )
             }
 
@@ -122,8 +126,28 @@ fun JampaTurismoApp(
                 )
             }
         }
+
+        // BottomSheet Interativo de Detalhes do Passeio (Sprint 4)
+        if (selectedPlaceForDetails != null) {
+            com.jampaturismo.core.ui.components.PlaceDetailsBottomSheet(
+                place = selectedPlaceForDetails,
+                currentTideHeight = homeUiState.tideData.currentHeight,
+                onDismissRequest = { selectedPlaceForDetails = null },
+                onNavigateToMap = { place ->
+                    mapViewModel.onSelectPlace(place)
+                    navController.navigate(Screen.Map.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
+        }
     }
 }
+
 
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)

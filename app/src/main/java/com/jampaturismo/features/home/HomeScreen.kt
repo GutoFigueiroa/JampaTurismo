@@ -2,15 +2,16 @@ package com.jampaturismo.features.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,14 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.jampaturismo.core.theme.AquaCyan
 import com.jampaturismo.core.theme.DeepNavy
 import com.jampaturismo.core.theme.OceanBlue
 import com.jampaturismo.core.ui.components.SafeWindowBadge
 import com.jampaturismo.data.model.TideData
+import com.jampaturismo.data.model.TideSafetyLevel
 import com.jampaturismo.data.model.TouristPlace
 import com.jampaturismo.data.model.WeatherData
 
@@ -41,7 +45,7 @@ fun HomeScreen(
     recommendedPlaces: List<TouristPlace> = emptyList(),
     onNavigateToTides: () -> Unit = {},
     onNavigateToPlaces: () -> Unit = {},
-    onSelectPlace: (String) -> Unit = {}
+    onSelectPlace: (TouristPlace) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -93,12 +97,12 @@ fun HomeScreen(
 
         item {
             LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 items(recommendedPlaces) { place ->
                     RecommendedPlaceCard(
                         place = place,
-                        onClick = { onSelectPlace(place.id) }
+                        onClick = { onSelectPlace(place) }
                     )
                 }
             }
@@ -109,18 +113,24 @@ fun HomeScreen(
 
 @Composable
 private fun HeaderSection() {
-    Column {
-        Text(
-            text = "JAMPA TURISMO",
-            style = MaterialTheme.typography.labelLarge,
-            color = AquaCyan
-        )
-        Text(
-            text = "João Pessoa & Litoral",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                text = "JAMPA TURISMO",
+                style = MaterialTheme.typography.labelLarge,
+                color = AquaCyan
+            )
+            Text(
+                text = "João Pessoa & Litoral",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
     }
 }
 
@@ -130,6 +140,23 @@ private fun HeroRecommendationCard(
     weatherData: WeatherData,
     onExploreClick: () -> Unit
 ) {
+    val (headline, description) = when (tideData.currentSafetyLevel) {
+        TideSafetyLevel.SAFE -> Pair(
+            "Condições Ideais para Areia Vermelha!",
+            "Maré baixa em ${tideData.currentHeight}m (mínima de ${tideData.nextLowTide.height}m às ${tideData.nextLowTide.time}). " +
+                    "Clima com ${weatherData.temperature}°C e mar calmo. ${tideData.safeWindowRemaining}."
+        )
+        TideSafetyLevel.WARNING -> Pair(
+            "Atenção: Maré Começando a Subir",
+            "Nível atual em ${tideData.currentHeight}m. Embarcações em bancos de areia devem iniciar o retorno. " +
+                    "Recomendamos as falésias de Coqueirinho ou orla de Cabo Branco."
+        )
+        TideSafetyLevel.DANGER -> Pair(
+            "Maré Alta: Explore Atrativos em Terra",
+            "Nível atual em ${tideData.currentHeight}m. Ótimo momento para o Centro Histórico, Casa da Pólvora ou Pôr do Sol do Jacaré às ${weatherData.sunsetTime}."
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,15 +176,14 @@ private fun HeroRecommendationCard(
                 SafeWindowBadge(safetyLevel = tideData.currentSafetyLevel)
 
                 Text(
-                    text = "Dia Perfeito para Areia Vermelha!",
+                    text = headline,
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    text = "A maré baixa atinge ${tideData.nextLowTide.height}m às ${tideData.nextLowTide.time}. " +
-                            "Clima com ${weatherData.temperature}°C e mar calmo. ${tideData.safeWindowRemaining}.",
+                    text = description,
                     color = Color(0xFFD6E4FF),
                     fontSize = 14.sp,
                     lineHeight = 20.sp
@@ -273,6 +299,7 @@ private fun QuickMetricsRow(
     }
 }
 
+
 @Composable
 private fun RecommendedPlaceCard(
     place: TouristPlace,
@@ -286,39 +313,51 @@ private fun RecommendedPlaceCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
-            Text(
-                text = place.category.label,
-                fontSize = 11.sp,
-                color = AquaCyan,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = place.name,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = place.subtitle,
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            if (place.tideDependency) {
-                Text(
-                    text = "🌊 Maré ideal: ≤ ${place.idealTideMaxHeight}m",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = OceanBlue
+        Column {
+            if (place.imageUrl.isNotBlank()) {
+                AsyncImage(
+                    model = place.imageUrl,
+                    contentDescription = place.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(110.dp)
                 )
+            }
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = place.category.label,
+                    fontSize = 11.sp,
+                    color = AquaCyan,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = place.name,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = place.subtitle,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                if (place.tideDependency) {
+                    Text(
+                        text = "🌊 Maré ideal: ≤ ${place.idealTideMaxHeight}m",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = OceanBlue
+                    )
+                }
             }
         }
     }
 }
+
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true, showSystemUi = true)
 @Composable
