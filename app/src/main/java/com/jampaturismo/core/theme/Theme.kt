@@ -17,42 +17,43 @@ import androidx.core.view.WindowCompat
 
 @Immutable
 data class TideSemanticColors(
-    val safe: Color = TideSafeGreen,
-    val warning: Color = TideWarningAmber,
-    val danger: Color = TideDangerCoral
+    val safe: Color = TurquoiseSafe,      // Turquesa #2EC4B6
+    val warning: Color = AmberWarning,    // Âmbar #FFB703
+    val danger: Color = CoralDanger       // Coral #E63946
 )
 
 val LocalTideColors = staticCompositionLocalOf { TideSemanticColors() }
 
 private val DarkColorScheme = darkColorScheme(
-    primary = AquaCyan,
-    onPrimary = DeepNavy,
-    primaryContainer = DeepNavy,
+    primary = CyanAqua,
+    onPrimary = NavyBlue,
+    primaryContainer = NavyBlueSecondary,
     onPrimaryContainer = SoftCyan,
     secondary = SoftCyan,
-    onSecondary = DeepNavy,
+    onSecondary = NavyBlue,
     background = DarkBackground,
     onBackground = TextPrimaryLight,
     surface = DarkSurface,
     onSurface = TextPrimaryLight,
-    surfaceVariant = Color(0xFF1E3A5F),
+    surfaceVariant = DarkSurfaceVariant,
     onSurfaceVariant = TextSecondaryLight
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = OceanBlue,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFD6E4FF),
-    onPrimaryContainer = OceanBlue,
-    secondary = AquaCyan,
-    onSecondary = DeepNavy,
-    background = SandWhite,
+    primary = NavyBlueSecondary,
+    onPrimary = LightSurface,
+    primaryContainer = Color(0xFFD0E1FD),
+    onPrimaryContainer = NavyBlue,
+    secondary = CyanAqua,
+    onSecondary = LightSurface,
+    background = LightBackground,
     onBackground = TextPrimaryDark,
-    surface = Color.White,
+    surface = LightSurface,
     onSurface = TextPrimaryDark,
-    surfaceVariant = SandSurface,
+    surfaceVariant = LightSurfaceVariant,
     onSurfaceVariant = TextSecondaryDark
 )
+
 
 val MaterialTheme.tideColors: TideSemanticColors
     @Composable
