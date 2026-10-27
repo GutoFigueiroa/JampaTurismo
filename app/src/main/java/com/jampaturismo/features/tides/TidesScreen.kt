@@ -227,3 +227,12 @@ private fun TidePeakRow(peak: TidePeak) {
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun TidesScreenPreview() {
+    com.jampaturismo.core.theme.JampaTurismoTheme {
+        TidesScreen()
+    }
+}
+

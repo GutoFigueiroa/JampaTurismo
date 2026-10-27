@@ -319,3 +319,14 @@ private fun RecommendedPlaceCard(
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun HomeScreenPreview() {
+    com.jampaturismo.core.theme.JampaTurismoTheme {
+        HomeScreen(
+            recommendedPlaces = com.jampaturismo.data.repository.TouristPlaceRepository().getPlaceById("areia_vermelha")?.let { listOf(it) } ?: emptyList()
+        )
+    }
+}
+

@@ -219,3 +219,12 @@ private fun WeatherMetricItem(
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun WeatherScreenPreview() {
+    com.jampaturismo.core.theme.JampaTurismoTheme {
+        WeatherScreen()
+    }
+}
+

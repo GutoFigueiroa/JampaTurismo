@@ -108,3 +108,12 @@ fun JampaTurismoApp() {
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+private fun JampaTurismoAppPreview() {
+    com.jampaturismo.core.theme.JampaTurismoTheme {
+        JampaTurismoApp()
+    }
+}
+

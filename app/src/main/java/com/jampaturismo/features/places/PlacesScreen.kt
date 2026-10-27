@@ -189,3 +189,13 @@ private fun PlaceCard(
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun PlacesScreenPreview() {
+    val samplePlaces = com.jampaturismo.data.repository.TouristPlaceRepository().getPlaceById("areia_vermelha")?.let { listOf(it) } ?: emptyList()
+    com.jampaturismo.core.theme.JampaTurismoTheme {
+        PlacesScreen(places = samplePlaces)
+    }
+}
+
