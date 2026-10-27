@@ -139,10 +139,20 @@ O aplicativo é estruturado em uma **Bottom Navigation Bar** moderna e persisten
 
 ---
 
-## 8. CRONOGRAMA DE DESENVOLVIMENTO
+## 8. CRONOGRAMA E STATUS DE EXECUÇÃO
 
-* **Sprint 1 (Semana 1):** Setup do projeto no Android Studio, Git, Design System (`Theme.kt`, `Color.kt`) e Navigation.
-* **Sprint 2 (Semana 2):** Camada de dados, modelos e integração com APIs de clima/marés e dados de atrativos.
-* **Sprint 3 (Semana 3):** Construção individual das telas e componentes por cada integrante do grupo.
-* **Sprint 4 (Semana 4):** Integração dos módulos na Tela Inicial (Dashboard Inteligente) e polimento da interface.
-* **Sprint 5 (Semana 5):** Testes em dispositivo físico, tratamento de modo offline e preparação da apresentação.
+* [x] **Sprint 1 (Fundação e Setup):** Setup do projeto no Android Studio com Jetpack Compose, versionamento Git, Design System completo (`Theme.kt`, `Color.kt`, `Type.kt`), cores semânticas de alerta e Bottom Navigation Bar.
+* [x] **Sprint 2 (Camada de Dados e APIs):** Consumo da API Open-Meteo via Retrofit 2, cálculo dos harmônicos de maré para o Porto de Cabedelo, repositório de atrativos turísticos com fotos e ViewModels com `StateFlow`.
+* [x] **Sprint 3 (Módulos Individuais):** Construção e polimento individual das 5 telas para os 5 integrantes com suporte a Compose Previews.
+* [x] **Sprint 4 (Dashboard Inteligente e Integração):** Banner inteligente com recomendação algorítmica na Tela Inicial, `PlaceDetailsBottomSheet` interativo e navegação cruzada com `Intent` para rotas no Google Maps.
+* [x] **Sprint 5 (Testes e Documentação):** Suíte de testes unitários com JUnit (`JampaTurismoBusinessLogicTest.kt`), tratamento de fallback offline resiliente e roteiro de apresentação em sala (`ROTEIRO_APRESENTACAO_UNIPE.md`).
+
+---
+
+## 9. GUIA RÁPIDO PARA EXECUÇÃO
+
+1. Clone ou abra a pasta do projeto no **Android Studio Hedgehog / Iguana / Koala ou superior**.
+2. Aguarde a sincronização do Gradle (todas as dependências do `libs.versions.toml` serão baixadas automaticamente).
+3. Selecione um dispositivo físico via USB ou um emulador Android (API 26 ou superior).
+4. Clique em **Run 'app'** (`Shift + F10`).
+
