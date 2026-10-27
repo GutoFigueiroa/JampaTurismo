@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Jampa Turismo</string>
+    <string name="nav_home">Início</string>
+    <string name="nav_tides">Marés</string>
+    <string name="nav_places">Explorar</string>
+    <string name="nav_map">Mapa</string>
+</resources>
