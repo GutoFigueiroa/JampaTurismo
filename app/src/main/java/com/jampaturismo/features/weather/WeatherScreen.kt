@@ -173,8 +173,93 @@ fun WeatherScreen(
                 )
             }
         }
+
+        // Seção Boletim de Balneabilidade SUDEMA (Inovação - Ponto 3)
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Balneabilidade das Praias",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Boletim SUDEMA/PB",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AquaCyan
+                        )
+                    }
+                    Text(
+                        text = "Temperatura média da água: 27°C (Águas calmas e mornas)",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Linhas de Praias monitoradas
+                    SudemaBeachStatusRow(beach = "Praia de Tambaú", status = "Própria para Banho", isSafe = true)
+                    SudemaBeachStatusRow(beach = "Praia de Cabo Branco", status = "Própria para Banho", isSafe = true)
+                    SudemaBeachStatusRow(beach = "Praia do Seixas / Penha", status = "Excelente para Banho", isSafe = true)
+                    SudemaBeachStatusRow(beach = "Praia de Camboinha (Cabedelo)", status = "Excelente para Banho", isSafe = true)
+                    SudemaBeachStatusRow(beach = "Praia do Bessa (Caribessa)", status = "Própria para Banho", isSafe = true)
+                }
+            }
+        }
     }
 }
+
+@Composable
+private fun SudemaBeachStatusRow(
+    beach: String,
+    status: String,
+    isSafe: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(
+                        color = if (isSafe) com.jampaturismo.core.theme.TurquoiseSafe else com.jampaturismo.core.theme.CoralDanger,
+                        shape = RoundedCornerShape(2.dp)
+                    )
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = beach,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        Text(
+            text = status,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = if (isSafe) com.jampaturismo.core.theme.TurquoiseSafe else com.jampaturismo.core.theme.CoralDanger
+        )
+    }
+}
+
 
 @Composable
 private fun WeatherMetricItem(

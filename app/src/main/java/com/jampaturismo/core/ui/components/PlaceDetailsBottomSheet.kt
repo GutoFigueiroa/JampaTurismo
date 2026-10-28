@@ -204,7 +204,65 @@ fun PlaceDetailsBottomSheet(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Badge de Balneabilidade da SUDEMA (Inovação - Ponto 3)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (place.waterQuality.isSafe) com.jampaturismo.core.theme.TurquoiseSafe.copy(alpha = 0.12f)
+                            else com.jampaturismo.core.theme.CoralDanger.copy(alpha = 0.12f)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "💧", fontSize = 16.sp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            text = "Boletim de Balneabilidade (SUDEMA)",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = place.waterQuality.label,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (place.waterQuality.isSafe) com.jampaturismo.core.theme.TurquoiseSafe else com.jampaturismo.core.theme.CoralDanger
+                        )
+                    }
+                }
+
+                // Botão de Contato com Barqueiros / WhatsApp (Inovação Comercial - Ponto 3)
+                if (!place.whatsappContact.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Button(
+                        onClick = {
+                            val msg = "Olá! Gostaria de consultar saídas de catamarã para ${place.name} hoje."
+                            val encodedMsg = Uri.encode(msg)
+                            val waUri = Uri.parse("https://api.whatsapp.com/send?phone=${place.whatsappContact}&text=$encodedMsg")
+                            val waIntent = Intent(Intent.ACTION_VIEW, waUri)
+                            context.startActivity(waIntent)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)), // Verde WhatsApp oficial
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(text = "💬", fontSize = 16.sp)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Reservar no WhatsApp (${place.operatorName ?: "Operador Náutico"})",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
 
                 // Ações: Ver no Mapa e Traçar Rota
                 Row(
@@ -251,3 +309,4 @@ fun PlaceDetailsBottomSheet(
         }
     }
 }
+

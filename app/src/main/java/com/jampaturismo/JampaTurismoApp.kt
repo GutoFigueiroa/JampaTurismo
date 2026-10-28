@@ -28,6 +28,8 @@ import com.jampaturismo.features.weather.WeatherViewModel
 
 @Composable
 fun JampaTurismoApp(
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {},
     homeViewModel: HomeViewModel = viewModel(),
     tidesViewModel: TidesViewModel = viewModel(),
     weatherViewModel: WeatherViewModel = viewModel(),
@@ -95,11 +97,14 @@ fun JampaTurismoApp(
                     tideData = homeUiState.tideData,
                     weatherData = homeUiState.weatherData,
                     recommendedPlaces = homeUiState.recommendedPlaces,
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
                     onNavigateToTides = { navController.navigate(Screen.Tides.route) },
                     onNavigateToPlaces = { navController.navigate(Screen.Places.route) },
                     onSelectPlace = { selectedPlaceForDetails = it }
                 )
             }
+
 
             // 2. Aba Marés (Matheus Henrique do Egíto)
             composable(Screen.Tides.route) {

@@ -20,7 +20,10 @@ class TouristPlaceRepository {
             latitude = -7.0270,
             longitude = -34.8239,
             travelTip = "Acesse apenas com maré ≤ 0.5m. Embarque pela praia do Poço ou Camboinha.",
-            imageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
+            whatsappContact = "5583999990001",
+            operatorName = "Associação dos Barqueiros de Camboinha / Poço",
+            waterQuality = WaterQualityStatus.EXCELLENT
         ),
         TouristPlace(
             id = "piscina_seixas",
@@ -33,7 +36,10 @@ class TouristPlaceRepository {
             latitude = -7.1511,
             longitude = -34.7932,
             travelTip = "Catamarãs saem da praia da Penha e Seixas 1h30 antes do pico da maré baixa.",
-            imageUrl = "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80",
+            whatsappContact = "5583999990002",
+            operatorName = "Catamarãs Náuticos do Seixas",
+            waterQuality = WaterQualityStatus.EXCELLENT
         ),
         TouristPlace(
             id = "picaozinho",
@@ -46,7 +52,10 @@ class TouristPlaceRepository {
             latitude = -7.1130,
             longitude = -34.8080,
             travelTip = "Leve snorkel e sapatilha aquática para proteger os pés nos corais.",
-            imageUrl = "https://images.unsplash.com/photo-1510414842594-a61752d38524?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1510414842594-a61752d38524?auto=format&fit=crop&w=600&q=80",
+            whatsappContact = "5583999990003",
+            operatorName = "Catamarãs de Tambaú",
+            waterQuality = WaterQualityStatus.SAFE
         ),
         TouristPlace(
             id = "jacare",
@@ -59,7 +68,10 @@ class TouristPlaceRepository {
             latitude = -7.0392,
             longitude = -34.8569,
             travelTip = "Chegue antes das 16h30 para pegar um bom lugar no píer ou nos catamarãs.",
-            imageUrl = "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=600&q=80",
+            whatsappContact = "5583999990004",
+            operatorName = "Catamarã Oficial do Jacaré",
+            waterQuality = WaterQualityStatus.SAFE
         ),
         TouristPlace(
             id = "coqueirinho",
@@ -72,7 +84,10 @@ class TouristPlaceRepository {
             latitude = -7.3195,
             longitude = -34.7972,
             travelTip = "Passeios de buggy levam aos mirantes do Dedo de Deus e das Tartarugas.",
-            imageUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
+            whatsappContact = "5583999990005",
+            operatorName = "Associação dos Bugueiros da Costa do Conde",
+            waterQuality = WaterQualityStatus.EXCELLENT
         ),
         TouristPlace(
             id = "centro_historico",
@@ -85,9 +100,13 @@ class TouristPlaceRepository {
             latitude = -7.1158,
             longitude = -34.8856,
             travelTip = "Ideal para o período da manhã ou dias nublados. Visite também a Casa da Pólvora.",
-            imageUrl = "https://images.unsplash.com/photo-1548625361-125032541300?auto=format&fit=crop&w=600&q=80"
+            imageUrl = "https://images.unsplash.com/photo-1548625361-125032541300?auto=format&fit=crop&w=600&q=80",
+            whatsappContact = null,
+            operatorName = null,
+            waterQuality = WaterQualityStatus.SAFE
         )
     )
+
 
     private val _places = MutableStateFlow(placesList)
     val places: Flow<List<TouristPlace>> = _places.asStateFlow()

@@ -43,6 +43,8 @@ fun HomeScreen(
     tideData: TideData = TideData(),
     weatherData: WeatherData = WeatherData(),
     recommendedPlaces: List<TouristPlace> = emptyList(),
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {},
     onNavigateToTides: () -> Unit = {},
     onNavigateToPlaces: () -> Unit = {},
     onSelectPlace: (TouristPlace) -> Unit = {}
@@ -56,7 +58,10 @@ fun HomeScreen(
     ) {
         item {
             Spacer(modifier = Modifier.height(8.dp))
-            HeaderSection()
+            HeaderSection(
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme
+            )
         }
 
         // Hero Card: Painel Inteligente de Janela Segura
@@ -112,7 +117,10 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HeaderSection() {
+private fun HeaderSection(
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -131,8 +139,23 @@ private fun HeaderSection() {
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
+
+        // Botão Alternador de Modo Claro / Escuro (Inovação - Ponto 3)
+        IconButton(
+            onClick = onToggleTheme,
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            Icon(
+                imageVector = if (isDarkTheme) androidx.compose.material.icons.Icons.Default.LightMode else androidx.compose.material.icons.Icons.Default.DarkMode,
+                contentDescription = "Alternar Modo Noturno",
+                tint = if (isDarkTheme) Color(0xFFFFB703) else OceanBlue
+            )
+        }
     }
 }
+
 
 @Composable
 private fun HeroRecommendationCard(

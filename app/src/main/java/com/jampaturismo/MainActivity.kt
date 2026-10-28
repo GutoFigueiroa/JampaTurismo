@@ -11,9 +11,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            JampaTurismoTheme {
-                JampaTurismoApp()
+            val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+            var isDarkTheme by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(systemDark) }
+
+            JampaTurismoTheme(darkTheme = isDarkTheme) {
+                JampaTurismoApp(
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = { isDarkTheme = !isDarkTheme }
+                )
             }
         }
+
     }
 }

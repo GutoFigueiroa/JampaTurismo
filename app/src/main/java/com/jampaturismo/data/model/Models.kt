@@ -45,6 +45,12 @@ enum class PlaceCategory(val label: String) {
     CULTURE("Histórico / Cultura")
 }
 
+enum class WaterQualityStatus(val label: String, val isSafe: Boolean) {
+    EXCELLENT("Própria para Banho (Excelente)", true),
+    SAFE("Própria para Banho", true),
+    IMPROPER("Imprópria para Banho (Aviso SUDEMA)", false)
+}
+
 data class TouristPlace(
     val id: String,
     val name: String,
@@ -57,6 +63,10 @@ data class TouristPlace(
     val longitude: Double,
     val travelTip: String,
     val imageUrl: String = "",
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val whatsappContact: String? = null,    // ex: "5583999999999"
+    val operatorName: String? = null,       // ex: "Associação de Barqueiros de Camboinha"
+    val waterQuality: WaterQualityStatus = WaterQualityStatus.EXCELLENT
 )
+
 
