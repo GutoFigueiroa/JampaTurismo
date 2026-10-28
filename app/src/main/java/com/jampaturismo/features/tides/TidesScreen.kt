@@ -111,6 +111,14 @@ fun TidesScreen(
             }
         }
 
+        // Gráfico da Curva da Maré em Canvas (Melhoria Técnica - Ponto 2)
+        item {
+            com.jampaturismo.core.ui.components.TideWaveChart(
+                dailyPeaks = tideData.dailyPeaks,
+                currentHeight = tideData.currentHeight
+            )
+        }
+
         // Título da Tábua do Dia
         item {
             Text(
@@ -119,6 +127,7 @@ fun TidesScreen(
                 fontWeight = FontWeight.Bold
             )
         }
+
 
         // Lista de Picos do Dia
         items(tideData.dailyPeaks) { peak ->

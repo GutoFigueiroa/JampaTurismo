@@ -133,9 +133,11 @@ fun JampaTurismoApp(
             composable(Screen.Map.route) {
                 MapScreen(
                     places = mapUiState.places,
+                    userLocation = mapUiState.userLocation,
                     onPlaceSelected = { mapViewModel.onSelectPlace(it) }
                 )
             }
+
         }
 
         // BottomSheet Interativo de Detalhes do Passeio (Sprint 4 & 5)

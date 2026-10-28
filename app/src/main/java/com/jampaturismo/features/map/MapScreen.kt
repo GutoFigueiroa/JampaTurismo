@@ -1,19 +1,22 @@
 package com.jampaturismo.features.map
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Directions
-import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material.icons.filled.LocationSearching
-import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,24 +29,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import com.jampaturismo.core.theme.AquaCyan
-import com.jampaturismo.core.theme.DeepNavy
 import com.jampaturismo.core.theme.OceanBlue
 import com.jampaturismo.data.model.TouristPlace
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 /**
  * Responsável: Matheus Henrique dos Santos Silva
  * Aba Mapa - Mapa Interativo com Google Maps SDK e GPS
  */
+@SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
     places: List<TouristPlace> = emptyList(),
+    userLocation: LatLng? = null,
     onPlaceSelected: (TouristPlace) -> Unit = {}
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
     // Coordenadas Centrais de João Pessoa / Orla de Tambaú
     val joaoPessoaCenter = remember { LatLng(-7.1150, -34.8250) }
@@ -52,6 +62,7 @@ fun MapScreen(
     }
 
     var selectedPlace by remember { mutableStateOf<TouristPlace?>(places.firstOrNull()) }
+    var currentUserLatLng by remember { mutableStateOf<LatLng?>(userLocation) }
 
     // Atualiza o local selecionado quando os dados carregarem
     LaunchedEffect(places) {
@@ -69,15 +80,52 @@ fun MapScreen(
             ) == PackageManager.PERMISSION_GRANTED
         )
     }
+
+    fun fetchUserLocation() {
+        if (hasLocationPermission) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { loc: Location? ->
+                if (loc != null) {
+                    val latLng = LatLng(loc.latitude, loc.longitude)
+                    currentUserLatLng = latLng
+                }
+            }
+        }
+    }
+
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasLocationPermission = isGranted
+        if (isGranted) {
+            fetchUserLocation()
+        }
     }
 
     LaunchedEffect(Unit) {
-        if (!hasLocationPermission) {
+        if (hasLocationPermission) {
+            fetchUserLocation()
+        } else {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    // Cálculo da distância em km até o atrativo selecionado
+    val distanceKm = remember(currentUserLatLng, selectedPlace) {
+        val user = currentUserLatLng
+        val target = selectedPlace
+        if (user != null && target != null) {
+            val userLoc = Location("User").apply {
+                latitude = user.latitude
+                longitude = user.longitude
+            }
+            val targetLoc = Location("Target").apply {
+                latitude = target.latitude
+                longitude = target.longitude
+            }
+            val meters = userLoc.distanceTo(targetLoc)
+            (meters / 100.0).roundToInt() / 10.0 // em km com 1 casa decimal
+        } else {
+            null
         }
     }
 
@@ -92,7 +140,7 @@ fun MapScreen(
             uiSettings = MapUiSettings(
                 zoomControlsEnabled = false,
                 compassEnabled = true,
-                myLocationButtonEnabled = hasLocationPermission,
+                myLocationButtonEnabled = false, // Usamos nosso botão customizado
                 mapToolbarEnabled = true
             )
         ) {
@@ -135,7 +183,7 @@ fun MapScreen(
                         color = AquaCyan
                     )
                     Text(
-                        text = "${places.size} Atrativos no Litoral",
+                        text = "${places.size} Atrativos no Litoral da Paraíba",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -148,7 +196,62 @@ fun MapScreen(
             }
         }
 
-        // Card Inferior do Ponto Selecionado
+        // Botões de Ação Flutuantes (GPS e Panorâmica)
+        Column(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Botão: Centralizar no Usuário (GPS)
+            FloatingActionButton(
+                onClick = {
+                    if (hasLocationPermission) {
+                        fetchUserLocation()
+                        currentUserLatLng?.let { userPos ->
+                            coroutineScope.launch {
+                                cameraPositionState.animate(
+                                    CameraUpdateFactory.newLatLngZoom(userPos, 14f)
+                                )
+                            }
+                        }
+                    } else {
+                        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = OceanBlue,
+                shape = CircleShape,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MyLocation,
+                    contentDescription = "Minha Localização GPS"
+                )
+            }
+
+            // Botão: Visão Geral de João Pessoa
+            FloatingActionButton(
+                onClick = {
+                    coroutineScope.launch {
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLngZoom(joaoPessoaCenter, 11.5f)
+                        )
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = OceanBlue,
+                shape = CircleShape,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Explore,
+                    contentDescription = "Ver Orla de JP"
+                )
+            }
+        }
+
+        // Card Inferior do Ponto Selecionado com Distância em KM
         selectedPlace?.let { place ->
             Card(
                 modifier = Modifier
@@ -183,11 +286,21 @@ fun MapScreen(
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+
+                            // Indicador de Distância GPS
+                            if (distanceKm != null) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "📍 Você está a ${distanceKm} km daqui",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = OceanBlue
+                                )
+                            }
                         }
 
                         Button(
                             onClick = {
-                                // Inicia a rota curva-a-curva com destino ao ponto turístico
                                 val gmmIntentUri = Uri.parse("google.navigation:q=${place.latitude},${place.longitude}&mode=d")
                                 val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
                                     setPackage("com.google.android.apps.maps")
@@ -195,7 +308,6 @@ fun MapScreen(
                                 try {
                                     context.startActivity(mapIntent)
                                 } catch (e: Exception) {
-                                    // Fallback caso o app Google Maps não esteja instalado (ex: emulador)
                                     val webUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}")
                                     context.startActivity(Intent(Intent.ACTION_VIEW, webUri))
                                 }
@@ -225,3 +337,4 @@ fun MapScreen(
         }
     }
 }
+
