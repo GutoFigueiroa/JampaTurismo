@@ -8,20 +8,30 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Water
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jampaturismo.core.notification.TideNotificationHelper
 import com.jampaturismo.core.theme.AquaCyan
 import com.jampaturismo.core.theme.OceanBlue
+import com.jampaturismo.core.theme.TurquoiseSafe
 import com.jampaturismo.core.ui.components.SafeWindowBadge
+import com.jampaturismo.core.ui.components.TideWaveChart
 import com.jampaturismo.data.model.TideData
 import com.jampaturismo.data.model.TidePeak
 
@@ -113,7 +123,7 @@ fun TidesScreen(
 
         // Gráfico da Curva da Maré em Canvas (Melhoria Técnica - Ponto 2)
         item {
-            com.jampaturismo.core.ui.components.TideWaveChart(
+            TideWaveChart(
                 dailyPeaks = tideData.dailyPeaks,
                 currentHeight = tideData.currentHeight
             )
@@ -174,8 +184,8 @@ fun TidesScreen(
 
         // Card de Lembrete / Notificação Local (Melhoria Imediata)
         item {
-            val context = androidx.compose.ui.platform.LocalContext.current
-            var notificationSent by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+            val context = LocalContext.current
+            var notificationSent by remember { mutableStateOf(false) }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -186,7 +196,7 @@ fun TidesScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Default.NotificationsActive,
+                            imageVector = Icons.Default.NotificationsActive,
                             contentDescription = null,
                             tint = AquaCyan,
                             modifier = Modifier.size(22.dp)
@@ -211,7 +221,7 @@ fun TidesScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     Button(
                         onClick = {
-                            com.jampaturismo.core.notification.TideNotificationHelper.sendTideAlertNotification(
+                            TideNotificationHelper.sendTideAlertNotification(
                                 context = context,
                                 title = "🌊 Janela Segura Ativa em João Pessoa!",
                                 message = "Maré em ${tideData.nextLowTide.height}m às ${tideData.nextLowTide.time}. Embarques para Areia Vermelha e Seixas liberados!"
@@ -219,13 +229,13 @@ fun TidesScreen(
                             notificationSent = true
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (notificationSent) com.jampaturismo.core.theme.TurquoiseSafe else OceanBlue
+                            containerColor = if (notificationSent) TurquoiseSafe else OceanBlue
                         ),
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(
-                            imageVector = if (notificationSent) androidx.compose.material.icons.Icons.Default.CheckCircle else androidx.compose.material.icons.Icons.Default.NotificationsActive,
+                            imageVector = if (notificationSent) Icons.Default.CheckCircle else Icons.Default.NotificationsActive,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp)
                         )

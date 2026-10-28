@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.WbSunny
@@ -148,7 +150,7 @@ private fun HeaderSection(
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             Icon(
-                imageVector = if (isDarkTheme) androidx.compose.material.icons.Icons.Default.LightMode else androidx.compose.material.icons.Icons.Default.DarkMode,
+                imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
                 contentDescription = "Alternar Modo Noturno",
                 tint = if (isDarkTheme) Color(0xFFFFB703) else OceanBlue
             )
