@@ -2,6 +2,8 @@ package com.jampaturismo.data.repository
 
 import com.jampaturismo.data.model.PlaceCategory
 import com.jampaturismo.data.model.TouristPlace
+import com.jampaturismo.data.model.WaterQualityStatus
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
