@@ -33,6 +33,8 @@ import com.jampaturismo.data.model.TouristPlace
 fun PlaceDetailsBottomSheet(
     place: TouristPlace?,
     currentTideHeight: Double,
+    isFavorite: Boolean = false,
+    onToggleFavorite: () -> Unit = {},
     onDismissRequest: () -> Unit,
     onNavigateToMap: (TouristPlace) -> Unit
 ) {
@@ -69,17 +71,38 @@ fun PlaceDetailsBottomSheet(
                     )
                 }
 
-                IconButton(
-                    onClick = onDismissRequest,
+                Row(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(12.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "Fechar")
+                    // Botão Favoritar
+                    IconButton(
+                        onClick = onToggleFavorite,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                    ) {
+                        Icon(
+                            imageVector = if (isFavorite) androidx.compose.material.icons.filled.Favorite else androidx.compose.material.icons.filled.FavoriteBorder,
+                            contentDescription = "Favoritar",
+                            tint = if (isFavorite) com.jampaturismo.core.theme.CoralDanger else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    // Botão Fechar
+                    IconButton(
+                        onClick = onDismissRequest,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                    ) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "Fechar")
+                    }
                 }
             }
+
 
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(

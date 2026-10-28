@@ -162,6 +162,75 @@ fun TidesScreen(
                 }
             }
         }
+
+        // Card de Lembrete / Notificação Local (Melhoria Imediata)
+        item {
+            val context = androidx.compose.ui.platform.LocalContext.current
+            var notificationSent by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Default.NotificationsActive,
+                            contentDescription = null,
+                            tint = AquaCyan,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Lembrete de Maré Baixa",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Receba um alerta antes da maré atingir ${tideData.nextLowTide.height}m às ${tideData.nextLowTide.time} no Porto de Cabedelo para não perder a travessia de Areia Vermelha.",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        lineHeight = 17.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Button(
+                        onClick = {
+                            com.jampaturismo.core.notification.TideNotificationHelper.sendTideAlertNotification(
+                                context = context,
+                                title = "🌊 Janela Segura Ativa em João Pessoa!",
+                                message = "Maré em ${tideData.nextLowTide.height}m às ${tideData.nextLowTide.time}. Embarques para Areia Vermelha e Seixas liberados!"
+                            )
+                            notificationSent = true
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (notificationSent) com.jampaturismo.core.theme.TurquoiseSafe else OceanBlue
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = if (notificationSent) androidx.compose.material.icons.Icons.Default.CheckCircle else androidx.compose.material.icons.Icons.Default.NotificationsActive,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (notificationSent) "Alerta Ativado com Sucesso!" else "Ativar Lembrete de Janela Segura",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+            }
+        }
+
     }
 }
 

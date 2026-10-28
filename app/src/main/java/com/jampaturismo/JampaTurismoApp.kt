@@ -108,10 +108,21 @@ fun JampaTurismoApp(
 
             // 3. Aba Explorar (Murillo Lopes)
             composable(Screen.Places.route) {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                androidx.compose.runtime.LaunchedEffect(Unit) {
+                    placesViewModel.attachContext(context)
+                }
+
                 PlacesScreen(
                     places = placesUiState.filteredPlaces,
                     selectedCategory = placesUiState.selectedCategory,
+                    searchQuery = placesUiState.searchQuery,
+                    favoriteIds = placesUiState.favoriteIds,
+                    showOnlyFavorites = placesUiState.showOnlyFavorites,
+                    onSearchQueryChange = { placesViewModel.onSearchQueryChange(it) },
                     onCategorySelected = { placesViewModel.onSelectCategory(it) },
+                    onToggleShowOnlyFavorites = { placesViewModel.toggleShowOnlyFavorites() },
+                    onToggleFavorite = { placesViewModel.toggleFavorite(it) },
                     onSelectPlace = { placeId ->
                         selectedPlaceForDetails = placesUiState.places.find { it.id == placeId }
                     }
@@ -127,14 +138,19 @@ fun JampaTurismoApp(
             }
         }
 
-        // BottomSheet Interativo de Detalhes do Passeio (Sprint 4)
+        // BottomSheet Interativo de Detalhes do Passeio (Sprint 4 & 5)
         if (selectedPlaceForDetails != null) {
+            val place = selectedPlaceForDetails!!
+            val isFavorite = placesUiState.favoriteIds.contains(place.id)
+
             com.jampaturismo.core.ui.components.PlaceDetailsBottomSheet(
-                place = selectedPlaceForDetails,
+                place = place,
                 currentTideHeight = homeUiState.tideData.currentHeight,
+                isFavorite = isFavorite,
+                onToggleFavorite = { placesViewModel.toggleFavorite(place.id) },
                 onDismissRequest = { selectedPlaceForDetails = null },
-                onNavigateToMap = { place ->
-                    mapViewModel.onSelectPlace(place)
+                onNavigateToMap = { selectedPlace ->
+                    mapViewModel.onSelectPlace(selectedPlace)
                     navController.navigate(Screen.Map.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
@@ -145,6 +161,7 @@ fun JampaTurismoApp(
                 }
             )
         }
+
     }
 }
 

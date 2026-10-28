@@ -1,5 +1,11 @@
 package com.jampaturismo.features.map
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,9 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
@@ -35,6 +43,8 @@ fun MapScreen(
     places: List<TouristPlace> = emptyList(),
     onPlaceSelected: (TouristPlace) -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     // Coordenadas Centrais de João Pessoa / Orla de Tambaú
     val joaoPessoaCenter = remember { LatLng(-7.1150, -34.8250) }
     val cameraPositionState = rememberCameraPositionState {
@@ -43,18 +53,47 @@ fun MapScreen(
 
     var selectedPlace by remember { mutableStateOf<TouristPlace?>(places.firstOrNull()) }
 
+    // Atualiza o local selecionado quando os dados carregarem
+    LaunchedEffect(places) {
+        if (selectedPlace == null && places.isNotEmpty()) {
+            selectedPlace = places.first()
+        }
+    }
+
+    // Permissão de Localização (GPS)
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        hasLocationPermission = isGranted
+    }
+
+    LaunchedEffect(Unit) {
+        if (!hasLocationPermission) {
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         // Mapa Google
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
-                isMyLocationEnabled = false // Ativar após solicitar permissões de ACCESS_FINE_LOCATION
+                isMyLocationEnabled = hasLocationPermission
             ),
             uiSettings = MapUiSettings(
                 zoomControlsEnabled = false,
                 compassEnabled = true,
-                myLocationButtonEnabled = false
+                myLocationButtonEnabled = hasLocationPermission,
+                mapToolbarEnabled = true
             )
         ) {
             places.forEach { place ->
@@ -147,7 +186,20 @@ fun MapScreen(
                         }
 
                         Button(
-                            onClick = { /* Abrir rota no Google Maps */ },
+                            onClick = {
+                                // Inicia a rota curva-a-curva com destino ao ponto turístico
+                                val gmmIntentUri = Uri.parse("google.navigation:q=${place.latitude},${place.longitude}&mode=d")
+                                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
+                                    setPackage("com.google.android.apps.maps")
+                                }
+                                try {
+                                    context.startActivity(mapIntent)
+                                } catch (e: Exception) {
+                                    // Fallback caso o app Google Maps não esteja instalado (ex: emulador)
+                                    val webUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${place.latitude},${place.longitude}")
+                                    context.startActivity(Intent(Intent.ACTION_VIEW, webUri))
+                                }
+                            },
                             colors = ButtonDefaults.buttonColors(containerColor = OceanBlue),
                             shape = RoundedCornerShape(12.dp)
                         ) {

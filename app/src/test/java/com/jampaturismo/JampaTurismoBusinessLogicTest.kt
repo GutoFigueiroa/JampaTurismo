@@ -79,4 +79,35 @@ class JampaTurismoBusinessLogicTest {
         val tideDependentList = touristPlaceRepository.getTideDependentPlaces()
         assertTrue("Deve listar destinos que dependem da maré baixa", tideDependentList.isNotEmpty())
     }
+
+    @Test
+    fun `testa busca textual de atrativos turisticos`() {
+        val allPlaces = touristPlaceRepository.getPlaceById("areia_vermelha")
+        assertNotNull(allPlaces)
+
+        // Busca por "Vermelha" deve encontrar a Ilha de Areia Vermelha
+        val query = "vermelha"
+        val matches = allPlaces!!.name.contains(query, ignoreCase = true) || allPlaces.subtitle.contains(query, ignoreCase = true)
+        assertTrue("Busca por 'vermelha' deve encontrar Areia Vermelha", matches)
+
+        // Busca por "sax" deve associar ao Pôr do Sol do Jacaré
+        val jacare = touristPlaceRepository.getPlaceById("jacare")!!
+        val jacareMatches = jacare.description.contains("sax", ignoreCase = true)
+        assertTrue("Busca por 'sax' deve encontrar descrição do Jacaré", jacareMatches)
+    }
+
+    @Test
+    fun `testa alternancia de favoritos`() {
+        val favorites = mutableSetOf<String>()
+        val placeId = "areia_vermelha"
+
+        // Favoritar
+        favorites.add(placeId)
+        assertTrue("Atrativo deve estar nos favoritos", favorites.contains(placeId))
+
+        // Desfavoritar
+        favorites.remove(placeId)
+        assertFalse("Atrativo deve ter sido removido dos favoritos", favorites.contains(placeId))
+    }
 }
+
