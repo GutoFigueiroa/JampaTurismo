@@ -8,10 +8,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Directions
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Waves
 import androidx.compose.material3.*
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,11 +88,12 @@ fun PlaceDetailsBottomSheet(
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
                     ) {
                         Icon(
-                            imageVector = if (isFavorite) androidx.compose.material.icons.filled.Favorite else androidx.compose.material.icons.filled.FavoriteBorder,
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = "Favoritar",
                             tint = if (isFavorite) com.jampaturismo.core.theme.CoralDanger else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+
 
                     // Botão Fechar
                     IconButton(
